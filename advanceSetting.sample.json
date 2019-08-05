@@ -1,0 +1,135 @@
+// 这是一份高级配置示例文件
+// 你可以挑选其中某些设置，填写到主题后台「超高级」设置框中
+
+// 填写的内容必须符合 JSON 格式，因此你必须 去掉 以 // 打头的所有注释！！！
+
+{
+    // 自定义左上角显示的站点名
+    "name" : "A Panda.",
+
+    // 桌面端头图高度，数值为高度占屏幕高度的百分比
+    "desktopBannerHeight" : 30,
+
+    // 移动端头图高度，数值为高度占屏幕高度的百分比
+    "mobileBannerHeight" : 30,
+
+    // 导航栏模式，随滚动显隐(0)，固定(1)，不固定(2)
+    "headerMode": 1,
+
+    // 文章字号。当用户在前端自己设置后，该选项会被覆盖。默认为 18px。
+    // 1: 14px, 2: 16px, 3: 18px, 4: 20px, 5: 22px
+    "defaultFontSize": 3,
+
+    // 社交 ID，用于生成分享链接
+    "twitterId": "AlanDecode",
+    "weiboId" : "古早日剧成瘾患者",
+
+    // 夜间模式时间段
+    "darkModeTime" : {
+        "start": 22.5,  // 晚 22 点 30 分开始
+        "end": 7.0      // 直到早 6 点 59 分
+    },
+
+    // 当操作系统为深色主题时主题颜色自动切换，仅在 macOS 10.14.4 及以上版本的 Safari 中可用
+    "followSystemColorScheme" : true, 
+
+    // 大图集
+    "largePhotoSet": true,
+
+    // Mac 风格代码块
+    "macStyleCodeBlock": true,
+
+    // 代码块行号支持
+    "lineNumbers": true,
+    "lineNumbersOnMobile": true,
+
+    // RSS原图保护
+    "rssPicProtect": true,
+
+    // 站点背景图，用于横向屏幕，例如电脑。可以填写随机 API，主题会自动为之加上遮罩。
+    "siteBg": "",
+    // 站点背景图,用于竖向屏幕，例如手机。可以填写随机 API，主题会自动为之加上遮罩。
+    "siteBgVertical": "",
+
+    // 自定义主题背景图遮罩颜色。
+    // 可以如下所示使用 RGBA 格式，或者直接设为 "none"
+    "bgMaskColor": {
+        "light": "rgba(255, 255, 255, 0.95)", // 日间模式下的遮罩
+        "dark": "rgba(0, 0, 0, 0.95)" // 夜间模式下的遮罩
+    },
+
+    // 将背景图转为灰度模式
+    "grayscaleBg": true,
+
+    // 自定义添加社交链接
+    "link" : [
+        {
+            "name": "GitHub",
+            "icon": "github",
+            "href": "https:\/\/github.com\/AlanDecode",
+            "target": "_blank"
+        },
+        {
+            "name": "微博",
+            "icon": "weibo",
+            "href": "https:\/\/weibo.com\/5245109677",
+            "target": "_blank"
+        },
+        {
+            "name": "Twitter",
+            "icon": "twitter",
+            "href": "https://twitter.com/AlanDecode",
+            "target": "_blank"
+        },
+        {
+            "name": "QQ",
+            "icon": "qq",
+            "href": "https://shang.qq.com/wpa/qunwpa?idkey=4ed2406c1d84b70c319c8ee79752d1704702b770aa0da405ca0f274e4d4db5f8",
+            "target": "_blank"
+        }
+    ],
+
+    // 自定义添加导航栏下拉列表
+    "nav" : [
+        {
+            "name" : "捉迷藏",
+            "items" : [
+                {
+                    "link" : "http:\/\/t.me\/imalanblog",
+                    "title" : "Telegram 群",
+                    "target" : "_self"
+                },
+                {
+                    "link" : "https:\/\/shang.qq.com\/wpa\/qunwpa?idkey=4ed2406c1d84b70c319c8ee79752d1704702b770aa0da405ca0f274e4d4db5f8",
+                    "title" : "QQ 群组",
+                    "target" : "_blank"
+                },
+                {
+                    "link" : "https:\/\/weibo.com\/5245109677",
+                    "title" : "新浪微博"
+                }, 
+                {
+                    "link" : "https:\/\/twitter.com\/AlanDecode",
+                    "title" : "Twitter"
+                },
+                {
+                    "link" : "https:\/\/github.com\/AlanDecode",
+                    "title" : "GitHub"
+                }
+            ]
+        },
+        {
+            "name" : "秘密花园",
+            "items" : [
+                {
+                    "link" : "https:\/\/www.imalan.cn",
+                    "title" : "引导页"
+                },
+                {
+                    "link" : "https:\/\/api.imalan.cn",
+                    "title" : "熊猫 API"
+                }
+            ]
+        }
+    ]
+}
