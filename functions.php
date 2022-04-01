@@ -22,8 +22,8 @@ Typecho_Plugin::factory('admin/write-post.php')->bottom = array('Utils', 'addBut
 Typecho_Plugin::factory('admin/write-page.php')->bottom = array('Utils', 'addButton');
 // 为防止友链解析与 Markdown 冲突，重写 Markdown 函数
 Typecho_Plugin::factory('Widget_Abstract_Contents')->markdown = array('Contents', 'markdown');
-Typecho_Plugin::factory('Widget_Abstract_Contents')->contentEx = array('Contents', 'parseContent');
-Typecho_Plugin::factory('Widget_Abstract_Contents')->excerptEx = array('Contents', 'parseContent');
+Typecho_Plugin::factory('Widget_Abstract_Contents')->contentEx = array('Contents', 'contentEx');
+Typecho_Plugin::factory('Widget_Abstract_Contents')->excerptEx = array('Contents', 'excerptEx');
 
 /**
  * 主题启用
@@ -35,29 +35,37 @@ function themeInit()
     Helper::options()->commentsOrder = 'DESC';
 }
 
-$GLOBALS['VOIDPluginREQ'] = 1.00;
+$GLOBALS['VOIDPluginREQ'] = 1.2;
+$GLOBALS['VOIDVersion'] = 3.51;
 
 /**
  * 主题设置
  */
 function themeConfig($form)
 {
+    echo '<style>
+        p.notice {
+        line-height: 1.75;
+        padding: .5rem;
+        padding-left: .75rem;
+        border-left: solid 4px #fbbc05;
+        background: rgba(0,0,25,.025);
+    }</style>';
+
     if (!Utils::hasVOIDPlugin($GLOBALS['VOIDPluginREQ'])) {
-        echo '<p><mark>未检测到合适的 VOID 插件！主题部分功能依赖插件支持，推荐安装以获得最佳体验。VOID 插件一般会随主题包发布，开发版主题请前往 https://github.com/AlanDecode/VOID-Plugin 获取。</mark></p>';
+        echo '<p class="notice">未检测到合适的 VOID 插件！主题部分功能依赖插件支持，推荐安装以获得最佳体验。VOID 插件一般会随主题包发布，开发版主题请前往 https://github.com/AlanDecode/VOID-Plugin 获取。</p>';
     }
+
+    echo '<p id="void-check-update" class="notice">正在检查更新……</p>';
+    echo '<script>var VOIDVersion='.$GLOBALS['VOIDVersion'].'</script>';
+    echo '<script src="'.Helper::options()->themeUrl.'/assets/check_update-9eb5c4cc00.js"></script>';
+
     $defaultBanner = new Typecho_Widget_Helper_Form_Element_Text('defaultBanner', null, '', '首页顶部大图', '可以填写随机图 API。');
     $form->addInput($defaultBanner);
     $indexBannerTitle = new Typecho_Widget_Helper_Form_Element_Text('indexBannerTitle', null, '', '首页顶部大标题', '不要太长');
     $form->addInput($indexBannerTitle);
     $indexBannerSubtitle = new Typecho_Widget_Helper_Form_Element_Text('indexBannerSubtitle', null, '', '首页顶部小标题', '');
     $form->addInput($indexBannerSubtitle);
-    
-    $bannerStyle = new Typecho_Widget_Helper_Form_Element_Radio('bannerStyle', array(
-        '0' => '显示在顶部',
-        '1' => '显示在文中',
-        '2' => '显示在顶部并添加模糊效果',
-        '3' => '显示在顶部并添加模糊效果，同时显示于正文中'), '0', '文章头图展示方式', '仅针对文章，独立页面头图始终显示在顶部。此字段可以在文章编辑页面自定义字段中单独设置以覆盖全局设置。');
-    $form->addInput($bannerStyle);
 
     $colorScheme = new Typecho_Widget_Helper_Form_Element_Radio('colorScheme', array('0' => '自动切换', '1' => '日间模式', '2' => '夜间模式'), '0', '主题颜色模式', '选择主题颜色模式。自动模式下每天 22:00 到次日 06:59 会显示为夜间模式。');
     $form->addInput($colorScheme);
@@ -72,7 +80,7 @@ function themeConfig($form)
     $form->addInput($reward);
     $serifincontent = new Typecho_Widget_Helper_Form_Element_Radio('serifincontent', array('0' => '不启用', '1' => '启用'), '0', '文章内容使用衬线体', '是否对文章内容启用衬线体（思源宋体）。此服务由 Google Fonts 提供，可能会有加载较慢的情况。');
     $form->addInput($serifincontent);
-    $lazyload = new Typecho_Widget_Helper_Form_Element_Radio('lazyload', array('0' => '不启用', '1' => '启用'), '0', '图片懒加载', '是否启用图片懒加载。');
+    $lazyload = new Typecho_Widget_Helper_Form_Element_Radio('lazyload', array('1' => '启用', '0' => '不启用'), '1', '图片懒加载', '是否启用图片懒加载。');
     $form->addInput($lazyload);
     $enableMath = new Typecho_Widget_Helper_Form_Element_Radio('enableMath', array('0' => '不启用', '1' => '启用'), '0', '启用数学公式解析', '是否启用数学公式解析。启用后会多加载 1~2M 的资源。');
     $form->addInput($enableMath);
@@ -102,12 +110,9 @@ function themeFields(Typecho_Widget_Helper_Layout $layout)
     $banner = new Typecho_Widget_Helper_Form_Element_Text('banner', null, null, '文章主图', '输入图片URL，该图片会用于主页文章列表的显示。');
     $layout->addItem($banner);
     $bannerStyle = new Typecho_Widget_Helper_Form_Element_Select('bannerStyle', array(
-        0 => '跟随主题设置',
-        1 => '显示在顶部',
-        2 => '显示在文中',
-        3 => '显示在顶部并添加模糊效果',
-        4 => '显示在顶部并添加模糊效果，同时显示于正文中',
-        5 => '不显示'), 0, '文章头图展示方式', '仅针对文章，独立页面头图始终显示在顶部。此字段可以覆盖主题的全局设置。');
+        0 => '显示在顶部',
+        1 => '显示在顶部并添加模糊效果',
+        2 => '不显示'), 0, '文章主图样式', '');
     $layout->addItem($bannerStyle);
     $bannerascover = new Typecho_Widget_Helper_Form_Element_Select('bannerascover', array('1' => '主图显示在标题上方', '2' => '主图作为标题背景', '0' => '不显示'), '1', '首页主图样式', '主图作为标题背景时会添加暗色遮罩，但仍然建议仅对暗色的主图采用该方式展示。否则请选择「主图显示在标题上方」。');
     $layout->addItem($bannerascover);

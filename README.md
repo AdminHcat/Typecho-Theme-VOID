@@ -1,4 +1,4 @@
-# Typecho Theme VOID 3.1.1
+# Typecho Theme VOID 3.5.1
 
 > ✏ 一款简洁优雅的 Typecho 主题
 
@@ -6,27 +6,27 @@
 
 ![](https://raw.githubusercontent.com/AlanDecode/Typecho-Theme-VOID/master/screenshot.png)
 
-[![build status](https://img.shields.io/travis/AlanDecode/Typecho-Theme-VOID/source.svg?style=flat-square)](https://travis-ci.org/AlanDecode/Typecho-Theme-VOID) [![downloads](https://img.shields.io/github/downloads/AlanDecode/Typecho-Theme-VOID/total.svg?style=flat-square)](https://github.com/AlanDecode/Typecho-Theme-VOID/releases) [![](https://img.shields.io/github/release/AlanDecode/Typecho-Theme-VOID.svg?style=flat-square)](https://github.com/AlanDecode/Typecho-Theme-VOID/releases) ![](https://img.shields.io/github/license/AlanDecode/Typecho-Theme-VOID.svg?style=flat-square)
+[![Build](https://github.com/AlanDecode/Typecho-Theme-VOID/workflows/Build/badge.svg)](https://github.com/AlanDecode/Typecho-Theme-VOID/actions) [![downloads](https://img.shields.io/github/downloads/AlanDecode/Typecho-Theme-VOID/total.svg?style=flat-square)](https://github.com/AlanDecode/Typecho-Theme-VOID/releases) [![](https://img.shields.io/github/release/AlanDecode/Typecho-Theme-VOID.svg?style=flat-square)](https://github.com/AlanDecode/Typecho-Theme-VOID/releases) ![](https://img.shields.io/github/license/AlanDecode/Typecho-Theme-VOID.svg?style=flat-square)
 
 ## 特性
 
-> 演示站点：[熊猫小A的博客](https://blog.imalan.cn)，介绍文章：[VOID：现在可以公开的情报](https://blog.imalan.cn/archives/247/)。
+> 介绍文章：[VOID：现在可以公开的情报](https://blog.imalan.cn/archives/247/)。
 
 * 响应式设计
 * PJAX 无刷新体验
 * AJAX 评论
-* 前台管理评论（删除、待审、标为垃圾）
 * 前台无跳转登陆（兼容 PJAX）
 * 自动夜间模式
 * 优秀的可读性
 * 衬线、非衬线两种文字风格
 * 代码高亮（浅色暗色两种风格，随主题切换）
-* 站点样式设置面板（日夜转换、字体、字号）
 * Mac 风格代码块（可开启或关闭）
-* 代码行号（可分别针对桌面或移动端设置开启或关闭）
+* 代码行号
+* 站点样式设置面板（日夜转换、字体、字号）
 * MathJax 公式
 * 表情解析（文章、评论可用）
 * 图片排版（可用作相册）
+* 图片懒加载
 * 灵活的头图设置
 * 文章目录解析
 * 完整的结构化数据支持
@@ -37,12 +37,14 @@
 * 浏览量统计
 * 文章点赞
 * 文章字数统计
+* 评论投票与自动折叠
+* 访客互动展示
 
 以及其他很多细节，总之用起来还算舒服。我建立了一个示例页面，在这里你可以看到 VOID 对常用写作元素的支持以及一些特色功能演示：[示例页面](https://blog.imalan.cn/archives/194/)。
 
 ## 开始使用
 
-1. 下载主题：[发布版](https://github.com/AlanDecode/Typecho-Theme-VOID/releases)
+1. 下载主题：[发布版](https://github.com/AlanDecode/Typecho-Theme-VOID/releases)，注意是下载 VOID-x.x.x.zip 这个压缩包，而不是 Source code
 2. 解压
 3. 将**主题文件夹下**的 VOID 文件夹上传至站点 /usr/themes 目录下
 4. 后台启用主题
@@ -76,7 +78,7 @@
 
 <details><summary>下载安装后样式不对？</summary><br>
 
-仓库中的是未压缩的源代码，包含大量实际使用中不需要的文件，并且可能无法直接使用。请一定通过这两个链接下载主题：[发布版](https://github.com/AlanDecode/Typecho-Theme-VOID/releases) | [开发版](https://github.com/AlanDecode/Typecho-Theme-VOID/archive/nightly.zip)
+仓库中的是未压缩的源代码，包含大量实际使用中不需要的文件，并且可能无法直接使用。请一定通过这两个链接下载主题：[发布版](https://github.com/AlanDecode/Typecho-Theme-VOID/releases) | [开发版](https://github.com/AlanDecode/Typecho-Theme-VOID/archive/nightly.zip)。注意其中发布版是下载 VOID-x.x.x.zip 这个压缩包，而不是 Source code。
 
 </details>
 
@@ -128,6 +130,18 @@
 [/photos]
 ```
 
+在某些 Typecho 版本中 HTML 会被转义后输出，请使用 `!!!` 包裹以上代码，例如：
+
+```
+!!!
+[photos]
+···
+[/photos]
+!!!
+```
+
+`!!!` 需要单独占一行。
+
 </details>
 
 <details><summary>增强的 Markdown 语法</summary><br>
@@ -140,13 +154,15 @@
 <details><summary>页面空白</summary><br>
 
 * 首先检查是否有插件重复引入了 JQuery，若有，在插件设置页面关闭。
-* 另外，推荐使用 PHP 7.0 及以上版本搭配 MySQL 数据库。PHP 5.6 或者更低版本可能出现未知问题（并且我不会去修复）。
+* 另外，推荐使用 PHP 7.0 及以上版本搭配 MySQL 数据库。PHP 5.6 或者更低版本以及其它数据库可能出现未知问题（并且我不会去修复）。
 
 </details>
 
 ## 更新
 
-同[开始使用](#开始使用)，区别是你可以直接覆盖主题文件，不禁用主题，这样你的主题设置就不会丢失。
+同[开始使用](#开始使用)，区别是你可以直接覆盖主题文件。大多数情况下无需禁用主题，这样你的主题设置就不会丢失。
+
+某些版本由于改用幅度较大需要重启主题与插件，请参见对应版本的发布日志。
 
 ## 开发与自定义
 
@@ -191,17 +207,32 @@ gulp build
 
 ## 更新日志
 
-**🍰 2019-07-24 Version 3.1.1**
+**🍰 2020-07-04 Version 3.5.1**
 
-* 新增：一些动画效果
-* 优化：移除几项外部调用，以防拖慢页面加载速度
-* 优化：鼠标选中区域可读性
-* 修复：安卓设备上点击出现蓝色蒙版
-* 修复：页脚遮挡表情面板
-* 修复：移动设备上设置面板导致链接无法点击
-* 其它细节调整与优化
+*该版本依赖 VOID 插件 1.20 及以上版本，请先禁用原插件，上传新插件后重新启用插件*
 
-注意，3.1.1 版本主题依赖 1.00 及以上版本插件。若之前已经成功安装启用插件（1.00 版）则不用处理，若之前安装插件出现问题可以尝试使用新版（1.01）插件。
+* 修复：iframe 尺寸错误（#42）
+* 修复：归档页面显示未发布的文章（#45）
+
+**🍰 2020-05-01 Version 3.5.0**
+
+*该版本依赖 VOID 插件 1.20 及以上版本，请先禁用原插件，上传新插件后重新启用插件*
+
+* 新增：[高级设置]图片懒加载渐变（需要 CDN 支持）
+* 新增：JSON-LD 结构化数据支持
+* 新增：重新设计的 404 页面
+* 新增：[高级设置]站点标题设置自定义字体
+* 优化：Bilibili 播放器自适应
+* 优化：图题不再影响灯箱展开
+* 调整：默认西文字体替换为 OpenSans
+* 调整：简化头图设置
+* 修复：某些情况下懒加载可能不触发的问题
+* 修复：懒加载导致归档页面错乱
+* 修复：Safari 平滑滚动无法打断, thank @Reedo0910
+* 修复：[#32](https://github.com/AlanDecode/Typecho-Theme-VOID/issues/32)
+* 修复：[#34](https://github.com/AlanDecode/Typecho-Theme-VOID/issues/34)
+* 移除：Microdata
+* 其它细节优化
 
 从 2.2 版本起，主题部分功能需要配套插件支持，例如文章点赞、浏览量统计、字数统计等。**请先卸载**原来的 Likes、TePostViews 插件，否则数据会出现错误！TePostViews 插件卸载前请设置为**卸载后保留数据**，以防丢失浏览数据。
 
@@ -211,11 +242,11 @@ gulp build
 
 ### 开源项目
 
-[JQuery](https://github.com/jquery/jquery) | [HighlightJS](https://highlightjs.org/) | [MathJax](https://www.mathjax.org/) | [fancyBox](http://fancyapps.com/fancybox/3/) | [bigfoot.js](http://www.bigfootjs.com/) | [OwO](https://github.com/DIYgod/OwO) | [pjax](https://github.com/defunkt/jquery-pjax) | [yue.css](https://github.com/lepture/yue.css) | [tocbot](https://tscanlin.github.io/tocbot/) | [pangu.js](https://github.com/vinta/pangu.js) | [social](https://github.com/lepture/social) | [Headroom.js](http://wicky.nillia.ms/headroom.js/) | [jquery.scrollTo](https://github.com/flesler/jquery.scrollTo) | [hypher](https://github.com/bramstein/hypher)
+[JQuery](https://github.com/jquery/jquery) | [PrismJS](https://prismjs.com/index.html) | [MathJax](https://www.mathjax.org/) | [fancyBox](http://fancyapps.com/fancybox/3/) | [bigfoot.js](http://www.bigfootjs.com/) | [OwO](https://github.com/DIYgod/OwO) | [pjax](https://github.com/defunkt/jquery-pjax) | [yue.css](https://github.com/lepture/yue.css) | [tocbot](https://tscanlin.github.io/tocbot/) | [pangu.js](https://github.com/vinta/pangu.js) | [social](https://github.com/lepture/social) | [Headroom.js](http://wicky.nillia.ms/headroom.js/) | [hypher](https://github.com/bramstein/hypher)
 
 ### 其他
 
-[RAW](https://github.com/AlanDecode/Typecho-Theme-RAW) | [Mirages](https://get233.com/archives/mirages-intro.html) | [handsome](https://www.ihewro.com/archives/489/) | [Card](https://blog.shuiba.co/bitcron-theme-card) | [Casper](https://github.com/TryGhost/Casper) | [Typlog](https://typlog.com/)
+[RAW](https://github.com/AlanDecode/Typecho-Theme-RAW) | [Mirages](https://get233.com/archives/mirages-intro.html) | [handsome](https://www.ihewro.com/archives/489/) | [Card](https://blog.shuiba.co/bitcron-theme-card) | [Casper](https://github.com/TryGhost/Casper) | [Typlog](https://typlog.com/) | [FORMA](https://justgoodthemes.com/ghost-themes/forma/)
 
 ## 捐助
 

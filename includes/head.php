@@ -51,12 +51,14 @@ if (isset($_POST['void_action'])) {
     <meta name="twitter:title" content="<?php Contents::title($this); ?>" />
     <meta name="twitter:description" content="<?php if($description != '') echo $description; else $this->excerpt(50); ?>" />
     <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="@<?php echo $setting['twitterId']; ?>" />
+    <meta name="twitter:creator" content="@<?php echo $setting['twitterId']; ?>" />
     <meta name="twitter:image" content="<?php echo $banner; ?>" />
     <?php $this->header('commentReply=&description=&'); ?>
 
     <!--CSS-->
-    <link rel="stylesheet" href="<?php Utils::indexTheme('/assets/bundle-5a10faf65a.css');?>">
-    <link rel="stylesheet" href="<?php Utils::indexTheme('/assets/VOID-6e164ce6b8.css');?>">
+    <link rel="stylesheet" href="<?php Utils::indexTheme('/assets/bundle-1e9bf597b1.css');?>">
+    <link rel="stylesheet" href="<?php Utils::indexTheme('/assets/VOID-c07295eada.css');?>">
 
     <!--JS-->
     <script src="<?php Utils::indexTheme('/assets/bundle-header-9977c8fbf5.js'); ?>"></script>
@@ -72,28 +74,22 @@ if (isset($_POST['void_action'])) {
         headerMode: <?php echo $setting['headerMode']; ?>,
         followSystemColorScheme: <?php echo $setting['followSystemColorScheme'] ? 'true' : 'false'; ?>,
         VOIDPlugin: <?php echo $setting['VOIDPlugin'] ? 'true' : 'false'; ?>,
-        likePath: "<?php Utils::index('/action/void_like?up'); ?>",
+        votePath: "<?php Utils::index('/action/void?'); ?>",
         lightBg: "",
         darkBg: "",
-        lineNumbers: <?php if ($setting['lineNumbers']) {
-                if (!Utils::isMobile() || $setting['lineNumbersOnMobile']) {
-                    echo 'true';   
-                } else {
-                    echo 'false';
-                }
-            } else {
-                echo 'false';
-            } ?>,
+        lineNumbers: <?php echo $setting['lineNumbers'] ? 'true' : 'false'; ?>,
         darkModeTime: {
             'start': <?php echo $setting['darkModeTime']['start']; ?>,
             'end': <?php echo $setting['darkModeTime']['end']; ?>
         },
         horizontalBg: <?php echo empty($setting['siteBg']) ? 'false' : 'true'; ?>,
         verticalBg: <?php echo empty($setting['siteBgVertical']) ? 'false' : 'true'; ?>,
-        indexStyle: <?php echo $setting['indexStyle']; ?>
+        indexStyle: <?php echo $setting['indexStyle']; ?>,
+        version: <?php echo $GLOBALS['VOIDVersion'] ?>,
+        isDev: true
     }
     </script>
-    <script src="<?php Utils::indexTheme('/assets/header-685e514c7a.js'); ?>"></script>
+    <script src="<?php Utils::indexTheme('/assets/header-dba1d6f214.js'); ?>"></script>
     
     <?php echo $setting['head']; ?>
     <style>
@@ -110,9 +106,28 @@ if (isset($_POST['void_action'])) {
         <?php endif; ?>
     </style>
 
-    <?php if(Utils::isSerif($setting)): ?>
-        <link id="stylesheet_noto" href="https://fonts.googleapis.com/css?family=Noto+Serif+SC:400,700&amp;subset=chinese-simplified" rel="stylesheet">
-    <?php else: ?>
-        <link id="stylesheet_droid" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700" rel="stylesheet">
+    <?php if (array_key_exists('src', $setting['brandFont']) && !empty($setting['brandFont']['src'])): ?>
+    <style>
+    @font-face {
+        font-family: "BrandFont";
+        src: url("<?php echo $setting['brandFont']['src']; ?>");
+    }
+    .brand {
+        font-family: BrandFont, sans-serif;
+        font-style: <?php echo $setting['brandFont']['style']; ?>!important;
+        font-weight: <?php echo $setting['brandFont']['weight']; ?>!important;
+    }
+    </style>
     <?php endif; ?>
+
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700&display=swap" rel="stylesheet">
+    <?php if(Utils::isSerif($setting)): ?>
+        <link id="stylesheet_noto" href="https://fonts.googleapis.com/css?family=Noto+Serif+SC:300,400,700&display=swap&subset=chinese-simplified" rel="stylesheet">
+    <?php endif; ?>
+
+    <?php if($setting['useFiraCodeFont']): ?>
+        <link href="https://fonts.googleapis.com/css?family=Fira+Code&display=swap" rel="stylesheet">
+        <style>.yue code, .yue tt {font-family: "Fira Code", Menlo, Monaco, Consolas, "Courier New", monospace}</style>
+    <?php endif; ?>
+
     </head>

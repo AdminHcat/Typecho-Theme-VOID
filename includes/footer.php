@@ -11,10 +11,10 @@ if (!defined('__TYPECHO_ROOT_DIR__')) exit;
 $setting = $GLOBALS['VOIDSetting'];
 ?>
         <footer>
-            <div class="container">
+            <div class="container wide">
                 <section>
-                    <p>感谢陪伴：<span id="uptime"></span></p>
                     <p>© <?php echo date('Y '); ?> <span class="brand"><?php echo $this->options->title; ?></span></p>
+                    <p>感谢陪伴：<span id="uptime"></span></p>
                 </section>
                 <section>
                     <p>Powered by <a href="http://typecho.org/">Typecho</a> • <a href="https://blog.imalan.cn/archives/247/">Theme VOID</a></p>
@@ -26,7 +26,7 @@ $setting = $GLOBALS['VOIDSetting'];
         <!--侧边控制按钮-->
         <aside id="ctrler-panel">
             <div class="ctrler-item" id="go-top">
-                <a target="_self" aria-label="返回顶部" href="javascript:void(0);" style="transform: translateX(-2px);" onclick="$.scrollTo(0, 300);"><i class="voidicon-up"></i></a>
+                <a target="_self" aria-label="返回顶部" href="javascript:void(0);" style="transform: translateX(-2px);" onclick="VOID_SmoothScroller.scrollTo(0);"><i class="voidicon-up"></i></a>
             </div>
 
             <?php if($this->user->hasLogin()): ?>
@@ -130,18 +130,18 @@ $setting = $GLOBALS['VOIDSetting'];
         }
         </script>
         <?php endif; ?>
-        <script src="<?php Utils::indexTheme('/assets/bundle-1409a38fc3.js'); ?>"></script>
+        <script data-manual src="<?php Utils::indexTheme('/assets/bundle-b514182550.js'); ?>"></script>
         <?php if($setting['enableMath']): ?>
         <script src='<?php Utils::indexTheme('/assets/libs/mathjax/2.7.4/MathJax.js'); ?>'></script>
         <?php endif; ?>
-        <script src="<?php Utils::indexTheme('/assets/VOID-2e1c86def5.js'); ?>"></script>
+        <script src="<?php Utils::indexTheme('/assets/VOID-e344978213.js'); ?>"></script>
         <script>
         if($(".OwO").length > 0){
             new OwO({
                 logo: 'OωO',
                 container: document.getElementsByClassName('OwO')[0],
                 target: document.getElementsByClassName('input-area')[0],
-                api: '<?php Utils::indexTheme('/assets/libs/owo/OwO_01.json'); ?>',
+                api: '<?php Utils::indexTheme('/assets/libs/owo/OwO_03.json'); ?>',
                 position: 'down',
                 width: '400px',
                 maxHeight: '250px'

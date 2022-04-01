@@ -10,20 +10,8 @@
 if (!defined('__TYPECHO_ROOT_DIR__')) exit;
 $setting = $GLOBALS['VOIDSetting'];
 $banner = $setting['defaultBanner'];
-if ($this->is('post')) {
-    if ($this->fields->bannerStyle > 0) {
-        $setting['bannerStyle'] = $this->fields->bannerStyle-1;
-    }
-    if ($setting['bannerStyle'] == 4) { // 强制不显示
-        $banner = '';
-    } else {
-        $banner = $this->fields->banner;
-        if($setting['bannerStyle'] == 1)
-            $banner = '';
-    }
-}
-if($this->is('page')){
-    $banner = $this->fields->banner;
+if($this->is('post') || $this->is('page')) {
+    $banner = $this->fields->bannerStyle < 2 ? $this->fields->banner : '';
 }
 ?>
 
@@ -35,6 +23,9 @@ if($this->is('page')){
         }
         if($setting['macStyleCodeBlock']) {
             echo ' macStyleCodeBlock';
+        }
+        if ($setting['lineNumbers']) {
+            echo ' line-numbers';
         }
         if(Utils::isSerif($setting)) {
             echo ' serif';
@@ -48,19 +39,15 @@ if($this->is('page')){
         if ($setting['indexStyle'] == 1) { // 强制不显示
             echo ' single-col';
         }
+        if ($setting['bluredLazyload']) { // 强制不显示
+            echo ' bluredLazyload';
+        }
+        if(Helper::options()->lazyload == '1') {
+            echo ' lazyload-img';
+        }
     ?>">
-
-    <style>
-        .screen-horizontal main::before{background-image: url("<?php echo $setting['siteBg']; ?>")}
-        .screen-vertical main::before{background-image: url("<?php echo $setting['siteBgVertical']; ?>")}
-        <?php if(!empty($setting['siteBg']) || !empty($setting['siteBgVertical'])): ?>
-            <?php if(array_key_exists('light', $setting['bgMaskColor'])) echo "div#bg-mask{background: {$setting['bgMaskColor']['light']}}"; ?>
-            <?php if(array_key_exists('dark', $setting['bgMaskColor'])) echo ".theme-dark div#bg-mask{background: {$setting['bgMaskColor']['dark']}}"; ?>
-            <?php if($setting['grayscaleBg']) echo '.with-bg main::before{filter: grayscale(100%);}'; ?>
-        <?php endif; ?>
-    </style>
     
-    <header class="header-mode-<?php echo $setting['headerMode']; ?> <?php if(!empty($banner)) echo 'force-dark'; else echo 'no-banner'; ?>">
+    <header class="header-mode-<?php echo $setting['headerMode']; ?> <?php if(empty($banner)) echo 'force-dark no-banner'; ?>">
         <div class="container wider">
             <nav>
                 <a role=button aria-label="展开导航" class="toggle" target="_self" href="javascript:void(0);" onclick="VOID_Ui.toggleNav(this);">
@@ -91,7 +78,10 @@ if($this->is('page')){
                         <input onkeydown="VOID.enterSearch(this);" type="text" name="search-content" id="search" required />
                     </span>
                 <?php endif; ?>
-                <a <?php if(Utils::isPluginAvailable('ExSearch')) echo 'class="search-form-input" style="display:block"'; ?> role=button aria-label="展开搜索" id="toggle-mobile-search" target="_self" href="javascript:void(0);" onclick="<?php if(!Utils::isPluginAvailable('ExSearch')) echo 'VOID_Ui.toggleSearch(this);'; ?>">
+                <a <?php if(Utils::isPluginAvailable('ExSearch')) echo 'class="search-form-input" style="display:flex"'; ?> 
+                    role=button aria-label="展开搜索" id="toggle-mobile-search" target="_self" 
+                    href="javascript:void(0);" 
+                    onclick="<?php if(!Utils::isPluginAvailable('ExSearch')) echo 'VOID_Ui.toggleSearch(this);'; ?>">
                     <i class="voidicon-search"></i>
                 </a>
                 <a target="_self" href="javascript:void(0);" id="toggle-setting" onclick="VOID_Ui.toggleSettingPanel();"><i class="voidicon-cog"></i></a>
@@ -126,4 +116,3 @@ if($this->is('page')){
         </section>
         <?php endforeach;} ?>
     </div>
-    <div id="bg-mask"></div>

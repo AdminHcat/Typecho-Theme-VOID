@@ -138,11 +138,11 @@ class Utils
     public static function addButton()
     {
         echo '<script src="';
-        self::indexTheme('/assets/libs/owo/owo_02.js');
+        self::indexTheme('/assets/libs/owo/owo_03.js');
         echo '"></script>';
 
         echo '<script src="';
-        self::indexTheme('/assets/editor-8046de86ed.js');
+        self::indexTheme('/assets/editor-ac76cef185.js');
         echo '"></script>';
 
         echo '<link rel="stylesheet" href="';
@@ -185,7 +185,6 @@ class Utils
      */
     public static function isOutdated($archive)
     {
-        date_default_timezone_set("Asia/Shanghai");
         $created = round((time()- $archive->created) / 3600 / 24);
         $updated = round((time()- $archive->modified) / 3600 / 24);
 
@@ -201,14 +200,16 @@ class Utils
      */
     public static function getBuildTime()
     {
-        date_default_timezone_set("Asia/Shanghai");
         $db = Typecho_Db::get();
         $content = $db->fetchRow($db->select()->from('table.contents')
-        ->where('table.contents.status = ?', 'publish')
-        ->where('table.contents.password IS NULL')
-        ->order('table.contents.created', Typecho_Db::SORT_ASC)
-        ->limit(1));
-        echo date('Y-m-d\TH:i', $content['created']);
+            ->where('table.contents.status = ?', 'publish')
+            ->where('table.contents.password IS NULL')
+            ->order('table.contents.created', Typecho_Db::SORT_ASC)
+            ->limit(1));
+        if (count($content))
+            echo date('Y-m-d\TH:i', $content['created']);
+        else
+            echo date('Y-m-d\TH:i');
     }
 
     /**
@@ -282,7 +283,6 @@ class Utils
             'serifincontent' => false,
             'pjax' => false,
             'pjaxreload' => '',
-            'bannerStyle' => 0,
             'indexStyle' => 0,
             'lazyload' => false,
             'indexBannerTitle' => '',
@@ -305,34 +305,38 @@ class Utils
         $themeSetting['colorScheme'] = intval($themeSetting['colorScheme']);
         $themeSetting['pjax'] = boolval($themeSetting['pjax']);
         $themeSetting['serifincontent'] = boolval($themeSetting['serifincontent']);
-        $themeSetting['bannerStyle'] = intval($themeSetting['bannerStyle']);
         $themeSetting['indexStyle'] = intval($themeSetting['indexStyle']);
 
         // 高级设置
         $advanceSetting = array(
             'nav' => '',
             'name' => '',
+            'brandFont' => array(
+                'src' => '',
+                'style' => 'normal',
+                'weight' => 'normal'
+            ),
             'desktopBannerHeight' => '',
             'mobileBannerHeight' => '',
             'twitterId' => '',
             'weiboId' => '',
             'headerMode' => 1,
             'defaultFontSize' => 3,
+            'useFiraCodeFont' => false,
             'followSystemColorScheme' => false,
             'largePhotoSet' => true,
             'macStyleCodeBlock' => true,
             'lineNumbers' => true,
-            'lineNumbersOnMobile' => true,
-            'rssPicProtect' => false,
-            'siteBg' => '',
-            'siteBgVertical' => '',
-            'bgMaskColor' => array(),
-            'grayscaleBg' => true,
+            'parseFigcaption' => true,
             'darkModeTime' => array (
                 'start' => 22.0,
                 'end' => 7.0
             ),
-            'link' => array()
+            'link' => array(),
+            'commentFoldThreshold' => array(5, 1.5),
+            'commentNotification' => '',
+            'bluredLazyload' => false,
+            'CDNType' => array()
         );
 
         if(!empty($options->advance)){
@@ -340,6 +344,10 @@ class Utils
             foreach ($settings as $key => $value) {
                 $advanceSetting[$key] = $value;
             }
+        }
+
+        if(self::isMobile() && array_key_exists('headerModeMobile', $advanceSetting)){
+            $advanceSetting['headerMode'] = $advanceSetting['headerModeMobile'];
         }
 
         $output = array_merge($themeSetting, $advanceSetting);

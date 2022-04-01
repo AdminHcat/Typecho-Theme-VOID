@@ -9,9 +9,6 @@
  */
 if (!defined('__TYPECHO_ROOT_DIR__')) exit;
 $setting = $GLOBALS['VOIDSetting'];
-if($this->fields->bannerStyle > 0) {
-    $setting['bannerStyle'] = $this->fields->bannerStyle-1;
-}
 ?>
 
 <main id="pjax-container">
@@ -19,50 +16,30 @@ if($this->fields->bannerStyle > 0) {
         <?php Contents::title($this); ?>
     </title>
 
+    <?php $this->need('includes/ldjson.php'); ?>
     <?php $this->need('includes/banner.php'); ?>
 
     <div class="wrapper container">
         <div class="contents-wrap"> <!--start .contents-wrap-->
             <section id="post" class="float-up">
-                <article class="post yue" itemscope itemtype="http://schema.org/Article">
-                    <h1 hidden itemprop="name"><?php $this->title(); ?></h1>
-                    <span hidden itemprop="author"><?php $this->author(); ?></span>
-                    <time hidden datetime="<?php echo date('c', $this->created); ?>" itemprop="datePublished"><?php echo date('Y-m-d', $this->created); ?></time>
-                    
-                    <p <?php if($this->fields->excerpt=='') echo 'hidden'?> class="headline" itemprop="headline"><?php if($this->fields->excerpt!='') echo $this->fields->excerpt; else $this->excerpt(30); ?></p>
-                    
-                    <?php if($this->fields->banner != ''): ?>
-                        <div <?php if($setting['bannerStyle'] == 0 || $setting['bannerStyle'] == 2 || $setting['bannerStyle'] == 4 || $this->is('page')) echo 'hidden'; ?> class="post-banner" itemprop="image" itemscope="" itemtype="https://schema.org/ImageObject">
-                            <a no-pjax data-fancybox="gallery" href="<?php echo $this->fields->banner; ?>"><img src="<?php echo $this->fields->banner; ?>" /></a>
-                            <meta itemprop="url" content="<?php echo $this->fields->banner; ?>">
-                        </div>
-                    <?php endif; ?>
+                <article class="post yue">
 
                     <?php $postCheck = Utils::isOutdated($this); if($postCheck["is"] && $this->is('post')): ?>
                         <p class="notice">请注意，本文编写于 <?php echo $postCheck["created"]; ?> 天前，最后修改于 <?php echo $postCheck["updated"]; ?> 天前，其中某些信息可能已经过时。</p>
                     <?php endif; ?>
 
-                    <div itemprop="articleBody" class="full">
+                    <div class="articleBody" class="full">
                         <?php $this->content(); ?>
                     </div>
                     
                     <?php $tags = Contents::getTags($this->cid); if (count($tags) > 0) { 
                         echo '<section class="tags">';
                         foreach ($tags as $tag) {
-                            echo '<a href="'.$tag['permalink'].'" rel="tag" class="tag-item btn btn-normal btn-narrow">'.$tag['name'].'</a>';
+                            echo '<a href="'.$tag['permalink'].'" rel="tag" class="tag-item">'.$tag['name'].'</a>';
                         }
                         echo '</section>';
                     } ?>
 
-                    <div hidden itemprop="publisher" itemscope="" itemtype="https://schema.org/Organization">
-                        <meta itemprop="name" content="<?php echo $this->options->title; ?>">
-                        <meta itemprop="url" content="<?php $this->options->siteUrl(); ?>">
-                        <div itemprop="logo" itemscope="" itemtype="https://schema.org/ImageObject">
-                            <meta itemprop="url" content="<?php Utils::gravatar($this->author->mail, 256, ''); ?>">
-                        </div>
-                    </div>
-                    <meta itemscope="" itemprop="mainEntityOfPage" itemtype="https://schema.org/WebPage" itemid="<?php $this->permalink(); ?>">
-                    <meta itemprop="dateModified" content="<?php echo date('c', $this->modified); ?>">
                     <div class="social-button" 
                         data-url="<?php $this->permalink(); ?>"
                         data-title="<?php Contents::title($this); ?>" 
@@ -72,18 +49,43 @@ if($this->fields->bannerStyle > 0) {
                         data-weibo="<?php if($setting['weiboId']!='') echo $setting['weiboId']; else $this->author(); ?>"
                         <?php if($this->fields->banner != '') echo 'data-image="'.$this->fields->banner.'"';?>>
                         <?php if(!empty($setting['reward'])):?>
-                            <a data-fancybox="gallery" role=button aria-label="赞赏" data-src="#reward" href="javascript:;" class="btn btn-normal btn-highlight">赏杯咖啡</a>
+                            <a data-fancybox="gallery-reward" role=button aria-label="赞赏" data-src="#reward" href="javascript:;" class="btn btn-normal btn-highlight">赏杯咖啡</a>
                             <div hidden id="reward"><img src="<?php echo $setting['reward']; ?>"></div>
                         <?php endif; ?>
                         <?php if($setting['VOIDPlugin']):?>
-                            <a role=button aria-label="点赞" id="social" href="javascript:void(0);" data-cid="<?php echo $this->cid;?>" onclick="VOID.like(this);" class="btn btn-normal post-like">ENJOY <span class="like-num"><?php echo $this->likes; ?></span></a>
+                            <a role=button 
+                                aria-label="为文章点赞" 
+                                id="social" 
+                                href="javascript:void(0);" onclick="VOID_Vote.vote(this);" 
+                                data-item-id="<?php echo $this->cid;?>" 
+                                data-type="up"
+                                data-table="content"
+                                class="btn btn-normal post-like vote-button"
+                            >ENJOY <span class="value"><?php echo $this->likes; ?></span>
+                            </a>
                         <?php endif; ?>
                         
                         <a aria-label="分享到微博" href="javascript:void(0);" onclick="Share.toWeibo(this);" class="social-button-icon"><i class="voidicon-weibo"></i></a>
                         <a aria-label="分享到Twitter" href="javascript:void(0);" onclick="Share.toTwitter(this);" class="social-button-icon"><i class="voidicon-twitter"></i></a>
                     </div>
                 </article>
-                
+
+                <script>
+                (function () {
+                    $.each($('iframe'), function(i, item){
+                        var src = $(item).attr('src');
+                        if (typeof src === 'string' && src.indexOf('player.bilibili.com') > -1) {
+                            // $(item).addClass('bili-player');
+                            if (src.indexOf('&high_quality') < 0) {
+                                src += '&high_quality=1'; // 启用高质量
+                                $(item).attr('src', src);
+                            }
+                            $(item).wrap('<div class="bili-player"></div>');
+                        }
+                    });
+                })();
+                </script>
+
                 <!--分页-->
                 <?php if(!$this->is('page')): ?>
                 <div class="post-pager"><?php $prev = Contents::thePrev($this); $next = Contents::theNext($this); ?>
@@ -121,5 +123,5 @@ if($this->fields->bannerStyle > 0) {
         <?php endif;?>
     </div>
     <!--评论区，可选-->
-    <?php if ($this->allow('comment')) $this->need('includes/comments.php'); ?>
+    <?php $this->need('includes/comments.php'); ?>
 </main>

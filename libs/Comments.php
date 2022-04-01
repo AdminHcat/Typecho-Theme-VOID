@@ -102,17 +102,25 @@ class VOID_Widget_Comments_Archive extends Widget_Abstract_Comments
         if (function_exists('threadedComments')) {
             return threadedComments($this, $singleCommentOptions);
         }
+
+        $setting = $GLOBALS['VOIDSetting'];
         
-        $commentClass = '';
+        $avatarClass = '';
         if ($this->authorId) {
             if ($this->authorId == $this->ownerId) {
-                $commentClass .= ' comment-by-author';
-            } else {
-                $commentClass .= ' comment-by-user';
+                $avatarClass .= ' star';
+            }
+        }
+
+        if ($setting['VOIDPlugin']) {
+            $metaArr = $this->getLikesAndDislikes();
+            if ($metaArr['dislikes'] >= $setting['commentFoldThreshold'][0]
+            && ($metaArr['dislikes'] >= $metaArr['likes']*$setting['commentFoldThreshold'][1])) {
+                $commentClass .= ' fold';
             }
         }
 ?>
-<div itemscope itemtype="http://schema.org/UserComments" id="<?php $this->theId(); ?>" class="comment-body<?php
+<div id="<?php $this->theId(); ?>" class="comment-body<?php
     if ($this->levels > 0) {
         echo ' comment-child';
         $this->levelsAlt(' comment-level-odd', ' comment-level-even');
@@ -124,39 +132,53 @@ class VOID_Widget_Comments_Archive extends Widget_Abstract_Comments
 ?>">
     <div class="comment-content-wrap">
         <div class="comment-meta">
-            <div class="comment-author" itemprop="creator" itemscope itemtype="http://schema.org/Person">
-                <span class="comment-avatar" itemprop="image"><?php $this->gravatar($singleCommentOptions->avatarSize, $singleCommentOptions->defaultAvatar); ?></span>
-                <b><cite class="fn" itemprop="name"><?php $singleCommentOptions->beforeAuthor();
+            <div class="comment-author">
+                <span class="comment-avatar<?php echo $avatarClass; ?>"><?php $this->gravatar($singleCommentOptions->avatarSize, $singleCommentOptions->defaultAvatar); ?></span>
+                <b><cite class="fn"><?php $singleCommentOptions->beforeAuthor();
                 $this->author();
                 $singleCommentOptions->afterAuthor(); ?></cite></b><span><?php echo $this->getParent(); ?></span>
-                <?php if($this->user->hasLogin()): ?>
-                    <span class="manage-comments">[ <a target="_self" onclick="VOID.manageComment(this);" no-pjax data-lang="确定删除此条评论？" href="javascript:void(0)" data-action="<?php $this->_security->index('/action/comments-edit?do=delete&coid=' . $this->coid); ?>">删除</a> | 
-                    <a target="_self" onclick="VOID.manageComment(this);" no-pjax href="javascript:void(0)" data-lang="确定标记此条评论为垃圾评论？" data-action="<?php $this->_security->index('/action/comments-edit?do=spam&coid=' . $this->coid); ?>">垃圾</a> | 
-                    <?php if ($this->status == 'approved'): ?>
-                        <a target="_self" onclick="VOID.manageComment(this);" no-pjax href="javascript:void(0)" data-lang="确定标记为待审评论？" data-action="<?php $this->_security->index('/action/comments-edit?do=waiting&coid=' . $this->coid); ?>">待审</a>
-                    <?php else: ?>
-                        <a target="_self" onclick="VOID.manageComment(this);" no-pjax href="javascript:void(0)" data-lang="确定标记为通过？" data-action="<?php $this->_security->index('/action/comments-edit?do=approved&coid=' . $this->coid); ?>">通过</a>
-                    <?php endif; ?>]</span>
-                <?php endif; ?>
             </div>
             <span>
-                <a href="<?php $this->permalink(); ?>"><time itemprop="commentTime" datetime="<?php $this->date('c'); ?>"><?php $singleCommentOptions->beforeDate();
+                <a href="<?php $this->permalink(); ?>"><timedatetime="<?php $this->date('c'); ?>"><?php $singleCommentOptions->beforeDate();
                 echo date('Y-m-d H:i', $this->created);
                 $singleCommentOptions->afterDate(); ?></time></a>
                 <?php if ('waiting' == $this->status) { ?>
                 <em class="comment-awaiting-moderation"><?php $singleCommentOptions->commentStatus(); ?></em>
                 <?php } ?>
+                <?php if ($setting['VOIDPlugin']) { ?>
+                <a style="margin: 0 5px" no-pjax target="_self" class="comment-vote vote-button" 
+                    href="javascript:void(0)" 
+                    onclick="VOID_Vote.vote(this)"
+                    data-item-id="<?php echo $this->coid;?>" 
+                    data-type="up"
+                    data-table="comment"
+                ><i class="voidicon-thumbs-up"></i> <span class="value"><?php echo $metaArr['likes']?></span>
+                </a>
+                <a no-pjax target="_self" class="comment-vote vote-button" 
+                    href="javascript:void(0)" 
+                    onclick="VOID_Vote.vote(this)"
+                    data-item-id="<?php echo $this->coid;?>" 
+                    data-type="down"
+                    data-table="comment"
+                ><i class="voidicon-thumbs-down"></i> <span class="value"><?php echo $metaArr['dislikes']?></span>
+                </a>
+                <?php } ?>
             </span>
         </div>
-        <div class="comment-content yue" itemprop="commentText">
-            <?php echo Contents::parseBiaoQing($this->content); ?>
+        <div class="comment-content yue">
+            <?php if ($setting['VOIDPlugin'] && $metaArr['dislikes'] >= $setting['commentFoldThreshold'][0]
+            && ($metaArr['dislikes'] >= $metaArr['likes']*$setting['commentFoldThreshold'][1])) { ?>
+                <span class="fold">[该评论已被自动折叠 | <a no-pjax target="_self" href="javascript:void(0)" 
+                onclick="VOID_Vote.toggleFoldComment(<?php echo $this->coid; ?>, this)">点击展开</a>]</span>
+            <?php }?>
+            <div class="comment-content-inner"><?php echo Contents::parseBiaoQing($this->content); ?></div>
         </div>
         <div class="comment-reply">
             <?php $this->reply($singleCommentOptions->replyWord); ?>
         </div>
     </div>
     <?php if ($this->children) { ?>
-    <div class="comment-children" itemprop="discusses">
+    <div class="comment-children">
         <?php $this->threadedComments(); ?>
     </div>
     <?php } ?>
@@ -166,7 +188,7 @@ class VOID_Widget_Comments_Archive extends Widget_Abstract_Comments
   
     private function getParent(){
         $db = Typecho_Db::get();
-        $parentID = $db->fetchRow($db->select()->from('table.comments')->where('coid = ?', $this->coid));
+        $parentID = $db->fetchRow($db->select('parent')->from('table.comments')->where('coid = ?', $this->coid));
         $parentID=$parentID['parent'];
         if($parentID=='0') return '';
         else {
@@ -176,6 +198,17 @@ class VOID_Widget_Comments_Archive extends Widget_Abstract_Comments
             return ' <span style="font-size: 0.9rem">回复</span> <b style="font-size:0.9rem;margin-right: 0.3em">@'.$author['author'].'</b> ';
         }
     }  
+
+    /**
+     * 获取评论赞踩
+     */
+    private function getLikesAndDislikes() {
+        $db = Typecho_Db::get();
+        $row = $db->fetchRow($db->select('likes, dislikes')
+            ->from('table.comments')
+            ->where('coid = ?', $this->coid));
+        return array('likes' => $row['likes'], 'dislikes' => $row['dislikes']);
+    }
     
     /**
      * 获取当前评论链接
